@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro y Cuestionario - Valorant</title>
+    <style>
+        /* Estilos existentes */
+        body {
+            background-image: url('https://wallpapers.com/images/featured/valorant-305kescxw5dpup7y.jpg'); /* Fondo de Valorant */
+            background-size: cover;
+            background-position: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: rgba(28, 35, 51, 0.9); /* Fondo semitransparente */
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px 5px rgba(255, 255, 255, 0.2);
+            width: 400px;
+            text-align: center;
+            margin-bottom: 20px; /* Espaciado entre los formularios */
+        }
+
+        h1 {
+            color: #FF4655;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2F3C52;
+            color: #FFF;
+        }
+
+        input[type="submit"],
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #FF4655;
+            border: none;
+            border-radius: 5px;
+            color: #FFF;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover,
+        button:hover {
+            background-color: #E13E4D;
+        }
+
+        .sexo-options {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .sexo-options label {
+            display: inline;
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #999;
+        }
+
+        .error,
+        .success {
+            display: none;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .error {
+            color: #FF0000;
+        }
+
+        .success {
+            color: #00FF00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="registro-container">
+        <h1>Registro</h1>
+        <form id="registro-form" onsubmit="return validarRegistro();">
+            <label for="nombre">Ingrese su nombre o ID de Discord</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ej: Nombre#1234" required>
+            <input type="submit" value="Registrarse">
+        </form>
+    </div>
+
+    <div class="container" id="cuestionario-container" style="display:none;">
+        <h1>Cuestionario Valorant</h1>
+        <!-- Formulario que se enviará a través de FormSpree -->
+        <form id="formspree-form" action="https://formspree.io/f/mkgnwyne" method="POST">
+            <!-- Campo oculto para incluir el nombre del registro -->
+            <input type="hidden" id="nombreOculto" name="nombreOculto">
+
+            <!-- Campos adicionales requeridos por FormSpree -->
+            <input type="hidden" name="_subject" value="Nueva respuesta de Cuestionario Valorant">
+            <!-- Opcional: Redireccionar después del envío -->
+            <!-- <input type="hidden" name="_next" value="https://tusitio.com/gracias.html"> -->
+
+            <!-- Email del usuario -->
+            <label>
+                Tu correo:
+                <input type="email" name="_replyto" placeholder="Introduce tu correo" required>
+            </label>
+
+            <label for="tiempo">¿Cuánto tiempo llevas jugando Valorant?</label>
+            <select id="tiempo" name="tiempo">
+                <option value="menos-de-6-meses">Menos de 6 meses</option>
+                <option value="6-12-meses">6-12 meses</option>
+                <option value="1-2-anos">1-2 años</option>
+                <option value="mas-de-2-anos">Más de 2 años</option>
+            </select>
+
+            <label for="rango">¿Cuál es tu rango actualmente?</label>
+            <select id="rango" name="rango">
+                <option value="hierro">Hierro</option>
+                <option value="bronce">Bronce</option>
+                <option value="plata">Plata</option>
+                <option value="oro">Oro</option>
+                <option value="platino">Platino</option>
+                <option value="diamante">Diamante</option>
+                <option value="inmortal">Inmortal</option>
+                <option value="radiante">Radiante</option>
+            </select>
+
+            <label for="personajes">¿Qué personajes sueles jugar?</label>
+            <input type="text" id="personajes" name="personajes" placeholder="Introduce los personajes que juegas">
+
+            <label for="motivo">¿Qué te motiva a unirte a nuestra comunidad?</label>
+            <textarea id="motivo" name="motivo" rows="4" placeholder="Cuéntanos tus razones..."></textarea>
+
+            <label>¿Cuál es tu sexo?</label>
+            <div class="sexo-options">
+                <label>
+                    <input type="radio" name="sexo" value="H" required> H
+                </label>
+                <label>
+                    <input type="radio" name="sexo" value="M" required> M
+                </label>
+            </div>
+
+            <button type="submit">Enviar</button>
+            <div class="success" id="success-message">¡Tu respuesta ha sido enviada exitosamente!</div>
+            <div class="error" id="error-message">Error en el envío. Intenta de nuevo más tarde.</div>
+        </form>
+    </div>
+
+    <script>
+        function validarRegistro() {
+            var nombre = document.getElementById('nombre').value.trim();
+            if (nombre === '') {
+                alert('Por favor, ingrese su nombre o ID de Discord.');
+                return false;
+            } else {
+                // Guardar el nombre y mostrar el cuestionario
+                document.getElementById('nombreOculto').value = nombre;
+                document.getElementById('registro-container').style.display = 'none';
+                document.getElementById('cuestionario-container').style.display = 'block';
+                return false;
+            }
+        }
+
+        // Manejo de envío de FormSpree con JavaScript para mostrar mensajes de éxito/error
+        document.getElementById('formspree-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita el envío por defecto
+
+            var form = event.target;
+            var formData = new FormData(form);
+
+            fetch(form.action, {
+                method: form.method,
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }).then(function(response) {
+                if (response.ok) {
+                    // Mostrar mensaje de éxito
+                    document.getElementById('success-message').style.display = 'block';
+                    document.getElementById('error-message').style.display = 'none';
+                    form.reset(); // Limpiar el formulario
+                } else {
+                    // Mostrar mensaje de error
+                    document.getElementById('error-message').style.display = 'block';
+                    document.getElementById('success-message').style.display = 'none';
+                }
+            }).catch(function(error) {
+                // Mostrar mensaje de error
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('success-message').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
